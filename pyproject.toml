@@ -7,7 +7,7 @@ name = "swarmcas"
 version = "0.1.0"
 description = "Content-addressed immutable artifact and blob store"
 readme = "README.md"
-authors = [{ name = "Michael Gulden", email = "mbgulden@gmail.com" }]
+authors = [{ name = "Michael Gulden", email = "michael@growthwebdev.com" }]
 license = { text = "MIT" }
 requires-python = ">=3.9"
 classifiers = [
@@ -29,3 +29,6 @@ where = ["."]
 
 [tool.setuptools.package-data]
 swarmcas = ["py.typed"]
+
+[project.urls]
+Homepage = "https://github.com/mbgulden/swarmcas"
