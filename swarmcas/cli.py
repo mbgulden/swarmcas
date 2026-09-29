@@ -1,18 +1,25 @@
 import argparse
 import sys
 from pathlib import Path
-from .store import ContentStore
+
 from .gc import GarbageCollector
+from .store import ContentStore
 from .sync import LocalSyncAdapter
 
+
 def main():
-    parser = argparse.ArgumentParser(prog="swarmcas", description="Content-addressed immutable artifact and blob store")
-    parser.add_argument("--store", type=str, default=".swarmcas", help="Path to store directory")
+    parser = argparse.ArgumentParser(
+        prog="swarmcas",
+        description="Content-addressed immutable artifact and blob store",
+    )
+    parser.add_argument(
+        "--store", type=str, default=".swarmcas", help="Path to store directory"
+    )
     subparsers = parser.add_subparsers(dest="command")
 
     put_p = subparsers.add_parser("put", help="Put a file into the store")
     put_p.add_argument("file", type=str)
-    
+
     get_p = subparsers.add_parser("get", help="Get a blob by digest")
     get_p.add_argument("digest", type=str)
     get_p.add_argument("out", type=str)
@@ -59,6 +66,7 @@ def main():
         sync_adapter = LocalSyncAdapter()
         count = sync_adapter.sync(store, target_store)
         print(f"Synced {count} blobs")
+
 
 if __name__ == "__main__":
     main()
