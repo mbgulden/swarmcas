@@ -1,10 +1,9 @@
-from typing import List, Tuple
-
 class Chunker:
     def __init__(self, target_size: int = 64 * 1024):
         self.target_size = target_size
 
-def chunk(data: bytes, target_size: int = 64 * 1024) -> List[Tuple[int, bytes]]:
+
+def chunk(data: bytes, target_size: int = 64 * 1024) -> list[tuple[int, bytes]]:
     chunks = []
     offset = 0
     while offset < len(data):
@@ -13,5 +12,6 @@ def chunk(data: bytes, target_size: int = 64 * 1024) -> List[Tuple[int, bytes]]:
         offset = end
     return chunks
 
-def reassemble(chunks: List[bytes]) -> bytes:
+
+def reassemble(chunks: list[bytes]) -> bytes:
     return b"".join(chunks)

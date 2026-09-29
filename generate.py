@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 base = Path(r"c:\Users\Michael Gulden\Github\swarmcas")
@@ -6,13 +5,17 @@ base.mkdir(parents=True, exist_ok=True)
 (base / "swarmcas").mkdir(exist_ok=True)
 (base / "tests").mkdir(exist_ok=True)
 
+
 def write_file(rel_path, content):
     p = base / rel_path
     p.parent.mkdir(parents=True, exist_ok=True)
     with open(p, "w", encoding="utf-8") as f:
         f.write(content.strip() + "\n")
 
-write_file("pyproject.toml", """
+
+write_file(
+    "pyproject.toml",
+    """
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
@@ -44,12 +47,17 @@ where = ["."]
 
 [tool.setuptools.package-data]
 swarmcas = ["py.typed"]
-""")
+""",
+)
 
 write_file("LICENSE", "MIT License")
-write_file("README.md", "# swarmcas\nContent-addressed immutable artifact and blob store.")
+write_file(
+    "README.md", "# swarmcas\nContent-addressed immutable artifact and blob store."
+)
 
-write_file("swarmcas/__init__.py", """
+write_file(
+    "swarmcas/__init__.py",
+    """
 from .types import CASError, BlobNotFoundError, IntegrityError, BlobRef, ChunkRef, StoreStats, SyncTarget
 from .hasher import content_hash, file_hash, verify_integrity, merkle_root
 from .chunks import Chunker, chunk, reassemble
@@ -77,11 +85,14 @@ __all__ = [
     "SyncAdapter",
     "LocalSyncAdapter"
 ]
-""")
+""",
+)
 
 write_file("swarmcas/py.typed", "")
 
-write_file("swarmcas/types.py", """
+write_file(
+    "swarmcas/types.py",
+    """
 from dataclasses import dataclass, field
 from typing import Optional, Dict
 
@@ -121,9 +132,12 @@ class SyncTarget:
     target_type: str
     path_or_url: str
     credentials: Optional[Dict[str, str]] = None
-""")
+""",
+)
 
-write_file("swarmcas/hasher.py", """
+write_file(
+    "swarmcas/hasher.py",
+    """
 import hashlib
 from pathlib import Path
 from typing import List
@@ -153,9 +167,12 @@ def merkle_root(digests: List[str]) -> str:
             next_level.append(content_hash((left + right).encode("utf-8")))
         current_level = next_level
     return current_level[0]
-""")
+""",
+)
 
-write_file("swarmcas/chunks.py", """
+write_file(
+    "swarmcas/chunks.py",
+    """
 from typing import List, Tuple
 
 class Chunker:
@@ -173,9 +190,12 @@ def chunk(data: bytes, target_size: int = 64 * 1024) -> List[Tuple[int, bytes]]:
 
 def reassemble(chunks: List[bytes]) -> bytes:
     return b"".join(chunks)
-""")
+""",
+)
 
-write_file("swarmcas/store.py", """
+write_file(
+    "swarmcas/store.py",
+    """
 import sqlite3
 import json
 import time
@@ -377,9 +397,12 @@ class ContentStore:
             total_chunks=total_chunks,
             dedup_savings_bytes=dedup_savings_bytes
         )
-""")
+""",
+)
 
-write_file("swarmcas/gc.py", """
+write_file(
+    "swarmcas/gc.py",
+    """
 import time
 import sqlite3
 from typing import List
@@ -406,9 +429,12 @@ class GarbageCollector:
             if not store.verify(blob_ref.digest):
                 corrupted.append(blob_ref.digest)
         return corrupted
-""")
+""",
+)
 
-write_file("swarmcas/sync.py", """
+write_file(
+    "swarmcas/sync.py",
+    """
 from .store import ContentStore
 
 class SyncAdapter:
@@ -425,9 +451,12 @@ class LocalSyncAdapter(SyncAdapter):
                     target.put(data, b.content_type, b.metadata)
                 synced_count += 1
         return synced_count
-""")
+""",
+)
 
-write_file("swarmcas/cli.py", """
+write_file(
+    "swarmcas/cli.py",
+    """
 import argparse
 import sys
 from pathlib import Path
@@ -492,11 +521,14 @@ def main():
 
 if __name__ == "__main__":
     main()
-""")
+""",
+)
 
 write_file("tests/__init__.py", "")
 
-write_file("tests/test_hasher.py", """
+write_file(
+    "tests/test_hasher.py",
+    """
 import tempfile
 from pathlib import Path
 from swarmcas.hasher import content_hash, file_hash, verify_integrity, merkle_root
@@ -521,9 +553,12 @@ def test_merkle_root():
     root = merkle_root(["a", "b"])
     assert isinstance(root, str)
     assert len(root) == 64
-""")
+""",
+)
 
-write_file("tests/test_chunks.py", """
+write_file(
+    "tests/test_chunks.py",
+    """
 from swarmcas.chunks import chunk, reassemble
 
 def test_chunking():
@@ -537,9 +572,12 @@ def test_reassemble():
     data = b"hello world"
     chunks_list = [c[1] for c in chunk(data, target_size=5)]
     assert reassemble(chunks_list) == data
-""")
+""",
+)
 
-write_file("tests/test_store.py", """
+write_file(
+    "tests/test_store.py",
+    """
 import tempfile
 from pathlib import Path
 from swarmcas.store import ContentStore
@@ -575,9 +613,12 @@ def test_verify():
         ref = store.put(b"test data")
         assert store.verify(ref.digest)
         assert not store.verify("madeup")
-""")
+""",
+)
 
-write_file("tests/test_gc.py", """
+write_file(
+    "tests/test_gc.py",
+    """
 import tempfile
 from pathlib import Path
 from swarmcas.store import ContentStore
@@ -598,9 +639,12 @@ def test_gc_collect():
         removed = gc.collect(store, max_age_days=-1)
         assert removed == 1
         assert not store.exists(ref.digest)
-""")
+""",
+)
 
-write_file("tests/test_sync.py", """
+write_file(
+    "tests/test_sync.py",
+    """
 import tempfile
 from pathlib import Path
 from swarmcas.store import ContentStore
@@ -619,9 +663,12 @@ def test_local_sync():
         assert synced == 1
         assert store2.exists(ref.digest)
         assert store2.get(ref.digest) == b"test data"
-""")
+""",
+)
 
-write_file("tests/test_cli.py", """
+write_file(
+    "tests/test_cli.py",
+    """
 import sys
 from unittest.mock import patch
 from swarmcas.cli import main
@@ -634,4 +681,5 @@ def test_cli_help(capsys):
             pass
     out, _ = capsys.readouterr()
     assert "Content-addressed immutable artifact and blob store" in out
-""")
+""",
+)
