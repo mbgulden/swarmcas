@@ -1,10 +1,14 @@
 from .store import ContentStore
 
+
 class SyncAdapter:
     pass
 
+
 class LocalSyncAdapter(SyncAdapter):
-    def sync(self, source: ContentStore, target: ContentStore, dry_run: bool = False) -> int:
+    def sync(
+        self, source: ContentStore, target: ContentStore, dry_run: bool = False
+    ) -> int:
         synced_count = 0
         source_blobs = source.list_blobs()
         for b in source_blobs:
